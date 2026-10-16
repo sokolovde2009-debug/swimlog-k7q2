@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b5fa5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Журнал">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Журнал пловца</title>
+<style>
+:root{color-scheme:light dark;--bg:#f2f6fa;--card:#fff;--ink:#14202b;--mut:#5b7188;--line:#d6e2ee;--acc:#0b5fa5;--accbg:#e4f0fb;--on:#fff;
+--ok:#1f8a66;--okbg:#e3f5ee;--warn:#b85f05;--warnbg:#fff1dc;--bad:#c0392b;--badbg:#fdeae7;--chip:#eaf0f6;--shadow:0 1px 2px rgba(20,32,43,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1620;--card:#16222f;--ink:#e6edf4;--mut:#93a7bb;--line:#26384a;--acc:#5aa9e6;--accbg:#173047;--on:#08121c;
+--ok:#4cc79d;--okbg:#12342a;--warn:#f0a050;--warnbg:#3a2a12;--bad:#ef6f61;--badbg:#3b1c19;--chip:#1f2f40;--shadow:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+#app{max-width:640px;margin:0 auto;padding:0 12px calc(84px + env(safe-area-inset-bottom))}
+header#top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 0 8px}
+.ttl{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:19px;margin:0}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:0 0 10px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;margin:0 0 8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h3{font-size:13px;margin:10px 0 4px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1 1 90px}
+label.f{display:block;font-size:12px;color:var(--mut);margin:0 0 2px}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;min-height:44px}
+input::placeholder,textarea::placeholder{color:var(--mut);opacity:.7}
+textarea{min-height:70px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;color:var(--ink)}
+.chip{background:var(--chip);border:1px solid transparent;border-radius:18px;padding:8px 12px;min-height:40px;cursor:pointer}
+.chip.on{background:var(--acc);color:var(--on);font-weight:600}
+.chip.good.on{background:var(--ok);color:var(--on)}
+.chip.warn.on{background:var(--warn);color:var(--on)}
+.chip.bad.on{background:var(--bad);color:var(--on)}
+.btn{background:var(--acc);color:var(--on);border:0;border-radius:12px;padding:11px 14px;min-height:44px;font-weight:600;cursor:pointer}
+.btn.sec{background:var(--chip);color:var(--ink);font-weight:500}
+.btn.danger{background:var(--bad);color:var(--on)}
+.btn.sm{padding:6px 10px;min-height:34px;font-size:14px}
+.meal{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
+.meal:first-of-type{border-top:0}
+.meal .ck{flex:0 0 26px;height:26px;border:2px solid var(--mut);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:transparent;margin-top:2px}
+.meal.on .ck{background:var(--ok);border-color:var(--ok);color:var(--on)}
+.meal .mb{flex:1}
+.meal .mt{font-weight:600}
+.meal .mi{font-size:13px;color:var(--mut)}
+.meal .kc{font-size:13px;color:var(--mut);white-space:nowrap;text-align:right}
+.meal.on .mt{color:var(--ok)}
+.alert{border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px}
+.alert.ok{background:var(--okbg);color:var(--ok)}
+.alert.warn{background:var(--warnbg);color:var(--warn)}
+.alert.bad{background:var(--badbg);color:var(--bad)}
+.alert b{color:inherit}
+.kv{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}
+.kv span:nth-child(odd){color:var(--mut)}
+.kv span:nth-child(even){text-align:right;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;color:var(--mut);font-weight:600;font-size:12px;padding:4px 4px;border-bottom:1px solid var(--line)}
+td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+.mut{color:var(--mut)}.sm{font-size:13px}.xs{font-size:12px}
+.pill{display:inline-block;border-radius:10px;padding:1px 8px;font-size:12px;font-weight:600;background:var(--chip)}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.warn{background:var(--warnbg);color:var(--warn)}.pill.bad{background:var(--badbg);color:var(--bad)}
+nav#tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+nav#tabs button{flex:1;background:none;border:0;padding:6px 2px;border-radius:10px;font-size:12px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;cursor:pointer}
+nav#tabs button .ic{font-size:20px;line-height:1}
+nav#tabs button.on{color:var(--acc);font-weight:700;background:var(--accbg)}
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#14202b;color:#fff;padding:9px 14px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.ex{border-top:1px solid var(--line);padding:10px 0}.ex:first-of-type{border-top:0}
+.ex .eh{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ex .code{background:var(--acc);color:var(--on);border-radius:6px;padding:0 6px;font-weight:700;font-size:12px;margin-right:6px}
+.setrow{display:flex;gap:6px;align-items:center;padding:3px 0;font-size:14px}
+.setrow .x{margin-left:auto}
+details summary{cursor:pointer;color:var(--acc);font-weight:600;padding:4px 0}
+svg.chart{width:100%;height:auto;display:block}
+.days{display:flex;gap:6px;align-items:center}
+.days .btn{flex:0 0 46px;padding:8px 0}
+.days input{flex:1}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top"></header>
+  <main id="view"></main>
+</div>
+<nav id="tabs"></nav>
+<div id="toast"></div>
+<script>
+'use strict';
+const DATA = {"start": "2026-10-05", "target": "2027-04-25", "version": "v1 · 17.10.2026", "calibEnd": "2026-11-01", "weeks": [{"n": 1, "blk": 1, "kind": "обычная", "main": "2×8 @6", "pull": "2×6 @6", "acc": "2×10 @6", "jump": "2×4", "ball": "2×5", "c": "—", "note": "Подбор весов. Тест 1: подтягивания максимум, прыжки, бросок, вес. Вода: все 10 тренировок; после основной серии отмечайте режим."}, {"n": 2, "blk": 1, "kind": "обычная", "main": "3×8 @7", "pull": "3×6 @7", "acc": "3×10 @7", "jump": "3×4", "ball": "3×5", "c": "—", "note": "Вода: все 10. С 19.10 вечерние вторник и четверг пропускаются (решение принято, журнал воды не нужен)."}, {"n": 3, "blk": 1, "kind": "обычная", "main": "3×8 @7,5", "pull": "3×7 @7,5", "acc": "3×10 @7,5", "jump": "3×4", "ball": "3×5", "c": "3×4 · 3×6 · 3×3 · 4×8", "note": "Вода: 8 тренировок. Первое занятие C (чт 22.10). Прибавка веса: +2,5 кг верх, +5 кг ноги."}, {"n": 4, "blk": 1, "kind": "разгрузка", "main": "2×8 @6", "pull": "2×6 @6", "acc": "2×10 @6", "jump": "2×3", "ball": "2×4", "c": "по 2 подхода", "note": "Разгрузка. Тест: подтягивания максимум."}, {"n": 5, "blk": 2, "kind": "обычная", "main": "4×6 @7", "pull": "4×5 @7", "acc": "3×8–10 @7", "jump": "3×4", "ball": "3×5", "c": "как в нед. 3", "note": "Начало блока 2."}, {"n": 6, "blk": 2, "kind": "обычная", "main": "4×5 @7,5", "pull": "4×5 @7,5", "acc": "3×8 @7,5", "jump": "3×4", "ball": "3×5", "c": "как в нед. 3", "note": ""}, {"n": 7, "blk": 2, "kind": "обычная", "main": "4×4 @8", "pull": "4×4 @8", "acc": "3×6–8 @8", "jump": "4×3", "ball": "3×5", "c": "как в нед. 3", "note": "Старты школы 16–18.11: за 3–4 дня до своей дистанции зал по 2 подхода, в день заплыва зала нет."}, {"n": 8, "blk": 2, "kind": "тест", "main": "3×3 @8 + 3ПМ", "pull": "3×3 @8 + 3ПМ", "acc": "2×8 @7", "jump": "3×3", "ball": "3×4", "c": "по 2 подхода", "note": "Тест 2: 3ПМ (A: подтягивания с весом, жим; B: присед). Контроль воды: флаги режима за недели 5–8 и результат старта 16–18.11; «тяжелее» два раза в неделю две недели подряд — пауза дефицита."}, {"n": 9, "blk": 3, "kind": "обычная", "main": "4×4 @7,5", "pull": "4×4 @7,5", "acc": "3×6–8 @7,5", "jump": "4×3", "ball": "4×4", "c": "как в нед. 3", "note": "Начало блока 3."}, {"n": 10, "blk": 3, "kind": "обычная", "main": "4×3 @8", "pull": "4×3 @8", "acc": "3×6 @8", "jump": "4×3", "ball": "4×4", "c": "как в нед. 3", "note": ""}, {"n": 11, "blk": 3, "kind": "обычная", "main": "3×3 @8", "pull": "3×3 @8", "acc": "3×6 @8", "jump": "4×3", "ball": "4×4", "c": "как в нед. 3", "note": "Мощность на максимальной скорости."}, {"n": 12, "blk": 3, "kind": "тест", "main": "2×3 @7 + 3ПМ", "pull": "2×3 @7 + 3ПМ", "acc": "2×8 @6", "jump": "2×3", "ball": "2×4", "c": "по 2 подхода", "note": "Разгрузка + Тест 3 (3ПМ). После теста программа обновляется."}, {"n": 13, "blk": 4, "kind": "обычная", "main": "3×4 @7", "pull": "3×4 @7", "acc": "2×8 @7", "jump": "3×3", "ball": "3×4", "c": "—", "note": "Каникулы: расписание воды может измениться; держите A и B."}, {"n": 14, "blk": 4, "kind": "контроль", "main": "3×4 @7,5", "pull": "3×4 @7,5", "acc": "2×8 @7", "jump": "3×3", "ball": "3×4", "c": "—", "note": "Контрольная точка: лучший официальный результат на 800 или 400 м с 16.11 по 24.01 (январское окно 4–24.01)."}, {"n": 15, "blk": 4, "kind": "контроль", "main": "3×3 @8", "pull": "3×3 @8", "acc": "2×6 @7", "jump": "3×3", "ball": "3×4", "c": "—", "note": "Контрольная точка (окно до 24.01)."}, {"n": 16, "blk": 4, "kind": "разгрузка", "main": "2×3 @7", "pull": "2×3 @7", "acc": "2×6 @6", "jump": "2×3", "ball": "2×4", "c": "—", "note": "Решение по контрольной точке."}, {"n": 17, "blk": 5, "kind": "обычная", "main": "4×5 @7", "pull": "4×5 @7", "acc": "3×8 @7", "jump": "3×4", "ball": "3×5", "c": "C", "note": "Начало блока 5 (веса от тестов нед. 12)."}, {"n": 18, "blk": 5, "kind": "обычная", "main": "4×4 @7,5", "pull": "4×4 @7,5", "acc": "3×8 @7,5", "jump": "3×4", "ball": "3×5", "c": "C", "note": ""}, {"n": 19, "blk": 5, "kind": "обычная", "main": "4×3 @8", "pull": "4×3 @8", "acc": "3×6 @8", "jump": "4×3", "ball": "3×5", "c": "C", "note": ""}, {"n": 20, "blk": 5, "kind": "разгрузка", "main": "2×3 @7", "pull": "2×3 @7", "acc": "2×6 @6", "jump": "2×3", "ball": "2×4", "c": "C: 2 подхода", "note": "Разгрузка."}, {"n": 21, "blk": 5, "kind": "обычная", "main": "4×3 @8", "pull": "4×3 @8", "acc": "3×6 @8", "jump": "4×3", "ball": "4×4", "c": "C", "note": ""}, {"n": 22, "blk": 5, "kind": "тест", "main": "3×3 @8,5 + 3ПМ", "pull": "3×3 @8,5 + 3ПМ", "acc": "2×6 @7", "jump": "3×3", "ball": "3×4", "c": "C: 2 подхода", "note": "Тест 4 (3ПМ)."}, {"n": 23, "blk": 6, "kind": "обычная", "main": "3×3 @7,5", "pull": "3×3 @7,5", "acc": "2×6 @7", "jump": "4×3", "ball": "4×4", "c": "C", "note": "Начало блока 6: меньше ног, больше скорости."}, {"n": 24, "blk": 6, "kind": "обычная", "main": "3×3 @8", "pull": "3×3 @8", "acc": "2×6 @7", "jump": "4×3", "ball": "4×4", "c": "C", "note": ""}, {"n": 25, "blk": 6, "kind": "обычная", "main": "3×3 @7,5", "pull": "3×3 @7,5", "acc": "2×6 @7", "jump": "4×3", "ball": "4×4", "c": "C", "note": ""}, {"n": 26, "blk": 6, "kind": "разгрузка", "main": "2×3 @7", "pull": "2×3 @7", "acc": "2×6 @6", "jump": "3×3", "ball": "3×4", "c": "C: 2 подхода", "note": "Разгрузка перед подводкой."}, {"n": 27, "blk": 7, "kind": "подводка", "main": "2×3 @7,5", "pull": "2×3 @7,5", "acc": "2×6 @7", "jump": "3×3", "ball": "3×4", "c": "C: 2 подхода", "note": "Предподводка: объём −30…40%."}, {"n": 28, "blk": 7, "kind": "подводка", "main": "2×3 @7 (только A)", "pull": "2×3 @7", "acc": "по 1–2 подхода", "jump": "2×3", "ball": "2×4", "c": "нет", "note": "Подводка: B — только прыжки, медбол и 1 подход приседа 3 повтора."}, {"n": 29, "blk": 7, "kind": "подводка", "main": "активация", "pull": "2×4 быстро", "acc": "—", "jump": "3×3", "ball": "3×4", "c": "нет", "note": "Одно занятие 25 мин в пн или вт; последний зал за 3–4 дня до первого заплыва."}], "blockNames": {"1": "Блок 1 · База и техника", "2": "Блок 2 · Максимальная сила", "3": "Блок 3 · Сила → мощность", "4": "Блок 4 · Поддержание и контроль", "5": "Блок 5 · Сила 2", "6": "Блок 6 · Скорость-сила", "7": "Подводка"}, "sessions": {"A": [{"code": "A1", "name": "Подтягивания с весом", "hint": "Хват сверху на ширине плеч, без раскачки: из виса плечи вниз и назад, подбородок над перекладиной, вниз 2 с. Ориентир веса +10…15 кг, подбор по RPE.", "b": ["3×6–7 @7", "4×4–5 @7,5–8", "4×3–4 @8"], "rest": "2–3 мин"}, {"code": "A2", "name": "Жим лёжа в стойке с упорами", "hint": "Лопатки сведены и опущены, ноги на полу, хват чуть шире плеч, локти около 45°, штанга к нижней части груди. Ориентир недель 2–3: 45–50 кг.", "b": ["3×8 @7", "4×5 @7,5–8", "4×4 @8"], "rest": "2–3 мин"}, {"code": "A3", "name": "Тяга гантели в наклоне", "hint": "Одной рукой, опора на скамью. Тянуть к поясу, лопатку сводить.", "b": ["3×10", "3×8", "3×6–8"], "rest": "90 с"}, {"code": "A4", "name": "Жим гантелей на скамье 30°", "hint": "Нейтральный хват (ладони друг к другу), локти вниз по диагонали.", "b": ["3×10", "3×8", "3×6–8"], "rest": "90 с"}, {"code": "A5", "name": "Разгибание рук на верхнем блоке", "hint": "Канат или прямая рукоять, локти у корпуса.", "b": ["3×10–12", "3×10", "3×8–10"], "rest": "60 с"}, {"code": "A6", "name": "Кор: dead bug + Pallof press", "hint": "Dead bug 8 на сторону, Pallof press 10 на сторону. Поясница не отрывается.", "b": ["3 круга", "3 круга", "3 круга"], "rest": "45–60 с"}, {"code": "A7", "name": "Плечевой пояс: профилактика", "hint": "Наружная ротация с резиной 2×15 · внутренняя ротация с резиной 2×12 · face pull 2×15 · Y-подъёмы лёжа с 1–2 кг 2×10 · отжимания с протракцией лопаток 2×10–12 (в верхней точке дожать, разводя лопатки). Усилие не выше RPE 6.", "b": ["2 круга", "2 круга", "2 круга"], "rest": "без отдыха между"}], "B": [{"code": "B1", "name": "Прыжки на тумбу (спуск шагом)", "hint": "Первым в занятии, пока свежи. Приземление мягко на всю стопу. Прекратить подход, если прыжки стали ниже.", "b": ["3×4 (30–40 см)", "3–4×3–4 (50 см)", "4×3 (50–60 см)"], "rest": "60–90 с"}, {"code": "B2", "name": "Присед со штангой на плечах", "hint": "До параллели, в стойке с упорами. Колени по линии носков, спина нейтральная, вес на всю стопу.", "b": ["3×8 @7", "4×5 @7,5–8", "4×3–4 @8"], "rest": "2–3 мин"}, {"code": "B3", "name": "Румынская тяга", "hint": "Штанга скользит вдоль ног, таз назад, колени чуть согнуты, до середины голени, спина нейтральная.", "b": ["3×8 @7", "3×6 @7,5", "3×5 @8"], "rest": "2 мин"}, {"code": "B4", "name": "Броски медбола 3–5 кг", "hint": "Из-за головы в пол 5 раз + ротационный бросок в стену 4 на сторону. Максимальная скорость.", "b": ["3×5", "3×5", "4×4"], "rest": "60–90 с"}, {"code": "B5", "name": "Тяга верхнего блока прямыми руками", "hint": "Руки почти прямые, тянуть к бёдрам, широчайшие напряжены.", "b": ["3×10–12", "3×10", "3×8–10"], "rest": "60–90 с"}, {"code": "B6", "name": "Икры и голеностоп", "hint": "Подъёмы на носки стоя 10–12 (пауза 1 с вверху) + «сидя на пятках» (носки назад) 2×30 с: подошвенное сгибание нужно для ног и дельфина.", "b": ["3 + 2×30 с", "3 + 2×30 с", "3 + 2×30 с"], "rest": "60 с"}, {"code": "B7", "name": "Кор: колесо, боковая планка, подъём ног в висе", "hint": "Колесо 6–8 (или планка 40 с), боковая планка 30 с на сторону, подъём согнутых ног в висе 8 (сгибатели бедра для удара ногой).", "b": ["3 круга", "3 круга", "3 круга"], "rest": "45–60 с"}], "C": [{"code": "C1", "name": "Прыжок в длину с места", "hint": "Отдых полный, приземление мягкое.", "sets": "3×4", "rest": "60–90 с"}, {"code": "C2", "name": "Бросок медбола от груди в стену", "hint": "Максимальная скорость.", "sets": "3×6", "rest": "60–90 с"}, {"code": "C3", "name": "Взрывные подтягивания без веса", "hint": "Вверх быстро, вниз 2 с.", "sets": "3×3", "rest": "90 с"}, {"code": "C4", "name": "Махи гирей 16–24 кг", "hint": "Разгибание бёдер, спина нейтральная.", "sets": "4×8", "rest": "60–90 с"}, {"code": "C5", "name": "Кор: Pallof press и ротация на блоке", "hint": "Pallof 10 на сторону (корпус не вращается), затем ротация на блоке сверху вниз 8 на сторону (вращение от бёдер).", "sets": "3×10 + 3×8", "rest": "45 с"}, {"code": "C6", "name": "Мобильность", "hint": "«Открытая книга» 2×6, сгибатели бёдер 2×30 с, голеностоп 2×10.", "sets": "—", "rest": "—"}]}, "tests": [["Вес тела", "утром после туалета до еды, весы с шагом 100 г; в журнале считается среднее за 7 дней", "каждый день"], ["Талия по пупку", "лента по коже на выдохе, без втягивания живота; база 87 см (17.10)", "раз в неделю, воскресенье утром"], ["Подтягивания максимум", "из виса, подбородок над перекладиной, без раскачки", "нед. 1 и 4"], ["Подтягивания с весом 3ПМ", "пояс, лучший чистый подход из 3 повторов", "нед. 8, 12, 22"], ["Жим лёжа 3ПМ", "в стойке с упорами, лучший чистый подход из 3 повторов", "нед. 8, 12, 22"], ["Присед 3ПМ", "до параллели, в стойке с упорами", "нед. 8, 12, 22"], ["Прыжок вверх", "отметка мелом на стене, лучший из 3", "нед. 1, 8, 12"], ["Прыжок в длину с места", "лучший из 3, замер по пятке", "нед. 1, 8, 12"], ["Бросок медбола 4 кг из-за головы вперёд", "на дальность, лучший из 3 (если есть место)", "нед. 1, 8, 12"], ["800 и 400 м кролем", "официальный старт с электронным временем; в тренировке свои заплывы не засекаются", "16–18.11 · 09.12 · январь (контрольная точка)"]], "meets": [["16–18.11.2026", "ЦВВС «Невская волна», 25 м", "Межмуниципальные соревнования на призы школы, проводит сама школа. Программа ещё не опубликована; в 2025 у юношей и юниоров были 800 м (2-й день), 400 м (3-й день) и 1500 м (1-й день). Юниоры 16–18 лет допускаются."], ["09.12.2026", "ЦВВС «Невская волна», 25 м", "«Новогодние старты на призы Деда Мороза», проводит школа. Программа неизвестна."], ["04–24.01.2027", "по календарю клуба", "Окно контрольной точки. «Стайер Санкт-Петербурга» 17.01 (800 м, 50 м) и «Всероссийская матчевая встреча» 23–24.01 платные, ты их не планируешь: нужен любой другой официальный старт с 400 или 800 м."], ["02–05.03.2027", "УСК «Центр плавания», 50 м", "Первенство Санкт-Петербурга, юниоры 16–18 лет (проект календаря). Заявляет клуб."], ["13–16.04.2027", "УСК «Центр плавания», 50 м", "Чемпионат Санкт-Петербурга (проект календаря). Заявляет клуб."]], "menu": {"days": {"Пн": {"name": "Понедельник", "load": "вода ×2", "rest": false, "meals": [{"id": "m1", "code": "М1", "time": "06:15", "title": "до воды (за 45 мин)", "note": "омлет на пару или на сковороде без масла, готовить за 10 минут", "items": ["3 яйца (150 г)", "молоко 2,5% 50 мл", "хлеб 100 г (3 ломтика)", "банан 120 г"], "kcal": 609, "p": 29}, {"id": "m2", "code": "М2", "time": "09:10", "title": "после воды (из сумки)", "note": "кефир в термосумке; съесть в раздевалке или по дороге", "items": ["кефир 1% 400 мл", "банан 120 г", "хлеб 80 г (3 ломтика)"], "kcal": 476, "p": 19}, {"id": "m3", "code": "М3", "time": "12:30", "title": "обед (контейнер, микроволновка)", "note": "курица, гречка и овощи из контейнера; в термосумке с хладоэлементами", "items": ["гречка (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 856, "p": 46}, {"id": "m4", "code": "М4", "time": "за 60–90 мин до вечерней тренировки", "title": "перекус", "note": "творог в термосумке", "items": ["творог 5% 80 г", "хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "яблоко сладкое 150 г"], "kcal": 370, "p": 19}, {"id": "m5", "code": "М5", "time": "19:15", "title": "ужин (дома)", "note": "курица из контейнера, макароны отварить свежие или из контейнера", "items": ["макароны (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "картофель 100 г"], "kcal": 793, "p": 41}, {"id": "m6", "code": "М6", "time": "19:50", "title": "перед сном (за 2 ч)", "note": "последний приём не позже 20:00", "items": ["кефир 1% 300 мл", "творог 5% 50 г"], "kcal": 180, "p": 18}], "extras": [{"id": "x1", "title": "Блок А к М2", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x2", "title": "Блок А к М4", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x3", "title": "Блок Б (рис) к ужину", "items": ["рис (сух.) 90 г"], "kcal": 297, "p": 6}], "kcal": 4201, "p": 190, "tee": 4644, "ea": 33.2, "kcal_maint": 4511, "eee": 1910}, "Вт": {"name": "Вторник", "load": "вода утром", "rest": false, "meals": [{"id": "m1", "code": "М1", "time": "06:15", "title": "до воды (за 45 мин)", "note": "овсянка: с вечера в банке с молоком в холодильнике, утром 1 мин в микроволновке", "items": ["овсяные хлопья (сух.) 100 г", "молоко 2,5% 200 мл", "банан 120 г", "мёд 15 г (2 ч. л.)"], "kcal": 611, "p": 19}, {"id": "m2", "code": "М2", "time": "09:10", "title": "после воды (из сумки)", "note": "кефир в термосумке; съесть в раздевалке или по дороге", "items": ["кефир 1% 400 мл", "банан 120 г", "хлеб 80 г (3 ломтика)"], "kcal": 476, "p": 19}, {"id": "m3", "code": "М3", "time": "12:30", "title": "обед (контейнер, микроволновка)", "note": "курица, гречка и овощи из контейнера; в термосумке с хладоэлементами", "items": ["гречка (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 856, "p": 46}, {"id": "m4", "code": "М4", "time": "за 60–90 мин до вечерней тренировки", "title": "перекус", "note": "творог в термосумке", "items": ["творог 5% 80 г", "хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "яблоко сладкое 150 г"], "kcal": 370, "p": 19}, {"id": "m5", "code": "М5", "time": "19:15", "title": "ужин (дома, свежее)", "note": "рыбу запечь или на пару 20–25 мин", "items": ["рис (сух.) 110 г", "минтай, филе (сырое) 180 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "картофель 200 г"], "kcal": 826, "p": 42}, {"id": "m6", "code": "М6", "time": "19:50", "title": "перед сном (за 2 ч)", "note": "последний приём не позже 20:00", "items": ["кефир 1% 300 мл", "творог 5% 50 г"], "kcal": 180, "p": 18}], "extras": [{"id": "x1", "title": "Картофель к обеду", "items": ["картофель 150 г"], "kcal": 116, "p": 3}], "kcal": 3437, "p": 167, "tee": 3754, "ea": 35.0, "kcal_maint": 3746, "eee": 1020}, "Ср": {"name": "Среда", "load": "вода + зал A", "rest": false, "meals": [{"id": "m1", "code": "М1", "time": "06:15", "title": "до воды (за 45 мин)", "note": "омлет на пару или на сковороде без масла, готовить за 10 минут", "items": ["3 яйца (150 г)", "молоко 2,5% 50 мл", "хлеб 100 г (3 ломтика)", "банан 120 г"], "kcal": 609, "p": 29}, {"id": "m2", "code": "М2", "time": "09:10", "title": "после воды (из сумки)", "note": "кефир в термосумке; съесть в раздевалке или по дороге", "items": ["кефир 1% 400 мл", "банан 120 г", "хлеб 80 г (3 ломтика)"], "kcal": 476, "p": 19}, {"id": "m3", "code": "М3", "time": "12:30", "title": "обед (контейнер, микроволновка)", "note": "курица, гречка и овощи из контейнера; в термосумке с хладоэлементами", "items": ["гречка (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 856, "p": 46}, {"id": "m4", "code": "М4", "time": "за 60–90 мин до вечерней тренировки", "title": "перекус", "note": "творог в термосумке", "items": ["творог 5% 80 г", "хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "яблоко сладкое 150 г"], "kcal": 370, "p": 19}, {"id": "m5", "code": "М5", "time": "19:15", "title": "ужин (дома)", "note": "курица из контейнера, макароны отварить свежие или из контейнера", "items": ["макароны (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "картофель 100 г"], "kcal": 793, "p": 41}, {"id": "m6", "code": "М6", "time": "19:50", "title": "перед сном (за 2 ч)", "note": "последний приём не позже 20:00", "items": ["кефир 1% 300 мл", "творог 5% 50 г"], "kcal": 180, "p": 18}], "extras": [{"id": "x1", "title": "Блок А к М4", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x2", "title": "Блок Б (рис) к ужину", "items": ["рис (сух.) 90 г"], "kcal": 297, "p": 6}], "kcal": 3892, "p": 184, "tee": 4126, "ea": 36.2, "kcal_maint": 4201, "eee": 1392}, "Чт": {"name": "Четверг", "load": "вода + зал C", "rest": false, "meals": [{"id": "m1", "code": "М1", "time": "06:15", "title": "до воды (за 45 мин)", "note": "овсянка: с вечера в банке с молоком в холодильнике, утром 1 мин в микроволновке", "items": ["овсяные хлопья (сух.) 100 г", "молоко 2,5% 200 мл", "банан 120 г", "мёд 15 г (2 ч. л.)"], "kcal": 611, "p": 19}, {"id": "m2", "code": "М2", "time": "09:10", "title": "после воды (из сумки)", "note": "кефир в термосумке; съесть в раздевалке или по дороге", "items": ["кефир 1% 400 мл", "банан 120 г", "хлеб 80 г (3 ломтика)"], "kcal": 476, "p": 19}, {"id": "m3", "code": "М3", "time": "12:30", "title": "обед (контейнер, микроволновка)", "note": "курица, рис и овощи из контейнера; в термосумке с хладоэлементами", "items": ["рис (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 857, "p": 40}, {"id": "m4", "code": "М4", "time": "за 60–90 мин до вечерней тренировки", "title": "перекус", "note": "творог в термосумке", "items": ["творог 5% 80 г", "хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "яблоко сладкое 150 г"], "kcal": 370, "p": 19}, {"id": "m5", "code": "М5", "time": "19:15", "title": "ужин (дома, свежее)", "note": "рыбу запечь или на пару 20–25 мин", "items": ["картофель 450 г", "минтай, филе (сырое) 180 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)"], "kcal": 656, "p": 40}, {"id": "m6", "code": "М6", "time": "19:50", "title": "перед сном (за 2 ч)", "note": "последний приём не позже 20:00", "items": ["кефир 1% 300 мл", "творог 5% 50 г"], "kcal": 180, "p": 18}], "extras": [{"id": "x1", "title": "Блок А к М4", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x2", "title": "Блок В (картофель) к ужину", "items": ["картофель 250 г"], "kcal": 192, "p": 5}], "kcal": 3654, "p": 166, "tee": 4001, "ea": 34.6, "kcal_maint": 3963, "eee": 1267}, "Пт": {"name": "Пятница", "load": "вода ×2", "rest": false, "meals": [{"id": "m1", "code": "М1", "time": "06:15", "title": "до воды (за 45 мин)", "note": "овсянка: с вечера в банке с молоком в холодильнике, утром 1 мин в микроволновке", "items": ["овсяные хлопья (сух.) 100 г", "молоко 2,5% 200 мл", "банан 120 г", "мёд 15 г (2 ч. л.)"], "kcal": 611, "p": 19}, {"id": "m2", "code": "М2", "time": "09:10", "title": "после воды (из сумки)", "note": "кефир в термосумке; съесть в раздевалке или по дороге", "items": ["кефир 1% 400 мл", "банан 120 г", "хлеб 80 г (3 ломтика)"], "kcal": 476, "p": 19}, {"id": "m3", "code": "М3", "time": "12:30", "title": "обед (контейнер, микроволновка)", "note": "курица, рис и овощи из контейнера; в термосумке с хладоэлементами", "items": ["рис (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 857, "p": 40}, {"id": "m4", "code": "М4", "time": "за 60–90 мин до вечерней тренировки", "title": "перекус", "note": "творог в термосумке", "items": ["творог 5% 80 г", "хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "яблоко сладкое 150 г"], "kcal": 370, "p": 19}, {"id": "m5", "code": "М5", "time": "19:15", "title": "ужин (дома, свежее)", "note": "рыбу запечь или на пару 20–25 мин", "items": ["рис (сух.) 110 г", "минтай, филе (сырое) 180 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "картофель 200 г"], "kcal": 826, "p": 42}, {"id": "m6", "code": "М6", "time": "19:50", "title": "перед сном (за 2 ч)", "note": "последний приём не позже 20:00", "items": ["кефир 1% 300 мл", "творог 5% 50 г"], "kcal": 180, "p": 18}], "extras": [{"id": "x1", "title": "Блок А к М2", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x2", "title": "Блок А к М4", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x3", "title": "Блок Б (макароны) к ужину", "items": ["макароны (сух.) 90 г"], "kcal": 310, "p": 9}], "kcal": 4251, "p": 179, "tee": 4644, "ea": 33.9, "kcal_maint": 4561, "eee": 1910}, "Сб": {"name": "Суббота", "load": "вода + зал B", "rest": false, "meals": [{"id": "m1", "code": "М1", "time": "06:15", "title": "до воды (за 45 мин)", "note": "овсянка: с вечера в банке с молоком в холодильнике, утром 1 мин в микроволновке", "items": ["овсяные хлопья (сух.) 100 г", "молоко 2,5% 200 мл", "банан 120 г", "мёд 15 г (2 ч. л.)"], "kcal": 611, "p": 19}, {"id": "m2", "code": "М2", "time": "09:10", "title": "после воды (из сумки)", "note": "кефир в термосумке; съесть в раздевалке или по дороге", "items": ["кефир 1% 400 мл", "банан 120 г", "хлеб 80 г (3 ломтика)"], "kcal": 476, "p": 19}, {"id": "m3", "code": "М3", "time": "12:30", "title": "обед (контейнер, микроволновка)", "note": "курица, рис и овощи из контейнера; в термосумке с хладоэлементами", "items": ["рис (сух.) 110 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 857, "p": 40}, {"id": "m4", "code": "М4", "time": "за 60–90 мин до вечерней тренировки", "title": "перекус", "note": "творог в термосумке", "items": ["творог 5% 80 г", "хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "яблоко сладкое 150 г"], "kcal": 370, "p": 19}, {"id": "m5", "code": "М5", "time": "19:15", "title": "ужин (дома, свежее)", "note": "рыбу запечь или на пару 20–25 мин", "items": ["рис (сух.) 110 г", "минтай, филе (сырое) 180 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 15 г (1 ст. л.)", "картофель 200 г"], "kcal": 826, "p": 42}, {"id": "m6", "code": "М6", "time": "19:50", "title": "перед сном (за 2 ч)", "note": "последний приём не позже 20:00", "items": ["кефир 1% 300 мл", "творог 5% 50 г"], "kcal": 180, "p": 18}], "extras": [{"id": "x1", "title": "Блок А к М2", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}, {"id": "x2", "title": "Блок Б (макароны) к ужину", "items": ["макароны (сух.) 90 г"], "kcal": 310, "p": 9}], "kcal": 3941, "p": 173, "tee": 4301, "ea": 34.4, "kcal_maint": 4251, "eee": 1567}, "Вс": {"name": "Воскресенье", "load": "отдых", "rest": true, "meals": [{"id": "m1", "code": "М1", "time": "09:00", "title": "завтрак", "note": "омлет с беконом и сыром — раз в неделю; при изжоге бекон убрать", "items": ["4 яйца (200 г)", "бекон 30 г", "сыр 20 г", "хлеб 80 г (3 ломтика)"], "kcal": 694, "p": 40}, {"id": "m2", "code": "М2", "time": "12:30", "title": "обед", "note": "", "items": ["рис (сух.) 100 г", "куриное филе бедра (сырое) 130 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 10 г (1 ст. л.)"], "kcal": 622, "p": 34}, {"id": "m3", "code": "М3", "time": "15:30", "title": "полдник", "note": "", "items": ["творог 5% 100 г", "банан 120 г", "мёд 15 г (2 ч. л.)", "хлеб 60 г (2 ломтика)"], "kcal": 431, "p": 23}, {"id": "m4", "code": "М4", "time": "19:00", "title": "ужин", "note": "", "items": ["макароны (сух.) 100 г", "минтай, филе (сырое) 180 г", "овощи (морковь, кабачок, цветная капуста), тушёные 150 г", "масло подсолнечное 10 г (1 ст. л.)"], "kcal": 608, "p": 41}, {"id": "m5", "code": "М5", "time": "19:50", "title": "вечер", "note": "не позже 20:00", "items": ["кефир 1% 300 мл", "яблоко сладкое 150 г", "хлеб 60 г (2 ломтика)"], "kcal": 348, "p": 14}], "extras": [], "kcal": 2703, "p": 152, "tee": 2734, "ea": 39.2, "kcal_maint": 2703, "eee": 0}}, "maint_extra": {"id": "mx", "title": "Блок А к М6 (поддержание)", "items": ["хлеб 60 г (2 ломтика)", "мёд 15 г (2 ч. л.)", "банан 120 г"], "kcal": 310, "p": 6}}, "norms": {"800": {"50": 505.0, "25": 497.0}, "400": {"50": 242.0, "25": 236.0}, "200": {"50": 113.95}, "100": {"50": 51.5}, "50": {"50": 23.2}}, "thresholds": {"800_50": 515.0, "800_25": 502.0, "400_50": 248.2}, "window": ["2026-11-16", "2027-01-24"], "pb": [{"dist": 800, "pool": 50, "t": 525.09, "note": "дата не указана"}, {"dist": 800, "pool": 25, "t": 506.92, "note": "дата не указана"}, {"dist": 400, "pool": 50, "t": 254.42, "note": "24.04.2026"}, {"dist": 400, "pool": 25, "t": 248.98, "note": "2024"}, {"dist": 200, "pool": 50, "t": 120.82, "note": "20.03.2026"}, {"dist": 100, "pool": 50, "t": 55.86}, {"dist": 50, "pool": 50, "t": 26.07}], "lifts": [["A1", "Подтягивания с весом", true], ["A2", "Жим лёжа", false], ["B2", "Присед", false], ["B3", "Румынская тяга", false]]};
+const LS_KEY = 'swimlog.v1';
+const DAYMS = 86400000;
+const WD = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const WDN = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const MON = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+
+/* ---------------- утилиты ---------------- */
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return ymd(d); };
+const diffDays = (a, b) => Math.round((parse(a) - parse(b)) / DAYMS);
+const weekNo = s => Math.floor(diffDays(s, DATA.start) / 7) + 1;
+const weekStart = n => addDays(DATA.start, (n - 1) * 7);
+const dayCode = s => WD[parse(s).getDay()];
+const today = () => ymd(new Date());
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const num = v => { if (v === '' || v == null) return null; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x) ? x : null; };
+const fmt = (x, d) => x == null ? '—' : x.toFixed(d == null ? 1 : d).replace('.', ',');
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
+const dlong = s => { const d = parse(s); return d.getDate() + ' ' + MON[d.getMonth()]; };
+const dshort = s => { const d = parse(s); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1); };
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2200); }
+function secStr(t) { // секунды -> м:сс,сс
+  if (t == null) return '—'; const m = Math.floor(t / 60), s = t - m * 60;
+  return (m ? m + ':' : '') + (s < 10 && m ? '0' : '') + s.toFixed(2).replace('.', ',');
+}
+function parseTime(str) { // «8:45,09», «8:45.09», «525,09»
+  if (!str) return null; const s = String(str).trim().replace(',', '.');
+  const m = s.match(/^(\d+):(\d{1,2}(?:\.\d+)?)$/);
+  if (m) return parseInt(m[1], 10) * 60 + parseFloat(m[2]);
+  const x = parseFloat(s); return isFinite(x) ? x : null;
+}
+
+/* ---------------- хранение ---------------- */
+let memOnly = false;
+function fresh() {
+  return {v: 1, settings: {mode: 'deficit', bw: 85}, days: {'2026-10-17': {rest: true}}, waist: {'2026-10-17': 87}, gym: [], starts: [], tests: [], ui: {}};
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) { const o = JSON.parse(raw); return Object.assign(fresh(), o, {settings: Object.assign(fresh().settings, o.settings || {})}); }
+  } catch (e) { memOnly = true; }
+  return fresh();
+}
+let S = load();
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) { if (!memOnly) { memOnly = true; toast('Память браузера недоступна: данные не сохранятся'); } }
+}
+function persistReq() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} }
+const D = date => (S.days[date] = S.days[date] || {});
+const hasData = d => d && (d.w != null || d.sleep != null || d.fat != null || d.flag || (d.meals && Object.keys(d.meals).length) || d.note || d.off || (d.sym && Object.keys(d.sym).length) || (d.done && Object.keys(d.done).length));
+const NOLOAD = ['A6', 'A7', 'B1', 'B7', 'C1', 'C3', 'C5', 'C6'];   // упражнения без записи веса: отметка «Сделал»
+
+/* ---------------- меню и день ---------------- */
+function dayType(date) { const d = S.days[date]; return (d && d.rest) ? 'Вс' : dayCode(date); }
+function menuFor(date) { return DATA.menu.days[dayType(date)]; }
+function plannedKcal(date) { const m = menuFor(date); return (S.settings.mode === 'maint' && !m.rest) ? m.kcal_maint : m.kcal; }
+function menuItems(date) {
+  const m = menuFor(date); const out = m.meals.map(x => Object.assign({}, x));
+  m.extras.forEach(x => out.push(Object.assign({extra: true}, x)));
+  if (S.settings.mode === 'maint' && !m.rest) out.push(Object.assign({extra: true}, DATA.menu.maint_extra));
+  return out;
+}
+function tickedKcal(date) {
+  const d = S.days[date] || {}, t = d.meals || {};
+  return menuItems(date).reduce((s, x) => s + (t[x.id] ? x.kcal : 0), 0);
+}
+
+/* ---------------- вес, недели ---------------- */
+function weightsOn(dates) { return dates.map(x => num((S.days[x] || {}).w)).filter(x => x != null); }
+function weekDates(n) { const s = weekStart(n); return [0, 1, 2, 3, 4, 5, 6].map(i => addDays(s, i)); }
+function weekAvg(n) { const w = weightsOn(weekDates(n)); return w.length >= 4 ? mean(w) : null; }
+function movAvg(date) { // среднее за 7 дней, заканчивая date, нужно >=3 значения
+  const w = weightsOn([0, 1, 2, 3, 4, 5, 6].map(i => addDays(date, -i))); return w.length >= 3 ? mean(w) : null;
+}
+function lastWeight() {
+  const ds = Object.keys(S.days).filter(k => num(S.days[k].w) != null).sort(); return ds.length ? num(S.days[ds[ds.length - 1]].w) : null;
+}
+function curBW() { return movAvg(today()) || lastWeight() || S.settings.bw || 85; }
+
+/* ---------------- зал ---------------- */
+function e1rm(set, ex) {
+  const bw = ex && ex.bw ? curBW() : 0, total = set.w + bw;
+  const f = 1 + (set.reps + (set.rpe != null ? 10 - set.rpe : 0)) / 30;
+  return {total: total * f, added: total * f - bw};
+}
+function exInfo(code) { for (const k of ['A', 'B', 'C']) { const x = DATA.sessions[k].find(e => e.code === code); if (x) return Object.assign({sess: k}, x, {bw: !!DATA.lifts.find(l => l[0] === code && l[2])}); } return null; }
+function liftBest(code, n) {
+  const ex = exInfo(code); const ds = weekDates(n); let best = null;
+  S.gym.forEach(g => { if (g.ex === code && ds.indexOf(g.date) >= 0) { const v = e1rm(g, ex); const x = ex.bw ? v.added : v.total; if (best == null || x > best) best = x; } });
+  return best;
+}
+function defaultSession(date) { const c = dayCode(date); return c === 'Ср' ? 'A' : c === 'Сб' ? 'B' : c === 'Чт' ? 'C' : 'A'; }
+function blockIdx(n) { return n <= 4 ? 0 : n <= 8 ? 1 : 2; }
+
+/* ---------------- правила недели ---------------- */
+function evalWeek(n) {
+  const r = {n, avg: weekAvg(n), prev: n > 1 ? weekAvg(n - 1) : null, flags: 0, flagsPrev: 0, signals: [], msgs: []};
+  r.delta = (r.avg != null && r.prev != null) ? r.avg - r.prev : null;
+  const cnt = k => weekDates(k).reduce((s, x) => s + (((S.days[x] || {}).flag === 'hard') ? 1 : 0), 0);
+  r.flags = cnt(n); r.flagsPrev = n > 1 ? cnt(n - 1) : 0;
+  const calib = weekStart(n) <= DATA.calibEnd;
+  r.calib = calib;
+  if (r.flags >= 2 && r.flagsPrev >= 2) r.signals.push('«Тяжелее» два раза в неделю и больше две недели подряд.');
+  // сила
+  DATA.lifts.forEach(l => { const a = liftBest(l[0], n), b = n > 1 ? liftBest(l[0], n - 1) : null; if (a != null && b != null && a < b * 0.95) r.signals.push('Сила ниже на 5% и больше: ' + l[1] + ' (' + fmt(a) + ' против ' + fmt(b) + ' кг).'); });
+  // сон: три ночи подряд меньше 6,5 (последние даты недели)
+  const ds = weekDates(n).filter(x => (S.days[x] || {}).sleep != null);
+  for (let i = 0; i + 2 < ds.length; i++) { const t = ds.slice(i, i + 3); if (t.every(x => num(S.days[x].sleep) < 6.5) && diffDays(t[2], t[0]) === 2) { r.signals.push('Сон меньше 6,5 часа три ночи подряд.'); break; } }
+  // симптомы ЖКТ три дня подряд
+  const all = weekDates(n);
+  for (let i = 0; i + 2 < all.length; i++) {
+    const t = all.slice(i, i + 3);
+    if (t.every(x => { const s = (S.days[x] || {}).sym || {}; return s.heart || s.belly; })) { r.signals.push('Изжога или боль в животе три дня подряд.'); break; }
+  }
+  // быстрое снижение две недели подряд
+  if (r.delta != null && r.delta <= -0.6 && n > 2) { const pd = weekAvg(n - 1) != null && weekAvg(n - 2) != null ? weekAvg(n - 1) - weekAvg(n - 2) : null; if (pd != null && pd <= -0.6) r.signals.push('Вес падает быстрее 0,6 кг в неделю две недели подряд.'); }
+  // вердикт по весу
+  if (r.avg == null) r.msgs.push({t: 'mut', s: 'Мало взвешиваний: нужно 4 в неделю и больше.'});
+  else if (r.delta == null) r.msgs.push({t: 'mut', s: 'Нет среднего прошлой недели для сравнения.'});
+  else if (calib) r.msgs.push({t: 'mut', s: 'Калибровка: решения по весу с 02.11. Изменение ' + (r.delta > 0 ? '+' : '') + fmt(r.delta, 2) + ' кг.'});
+  else if (r.delta <= -0.6) r.msgs.push({t: 'bad', s: 'Быстрее лимита (' + fmt(r.delta, 2) + ' кг). Добавь блок А в М6 с понедельника по субботу.'});
+  else if (r.delta <= -0.1) r.msgs.push({t: 'ok', s: 'По плану: ' + fmt(r.delta, 2) + ' кг за неделю.'});
+  else if (r.delta <= 0.5) { const pd = n > 2 && weekAvg(n - 1) != null && weekAvg(n - 2) != null ? weekAvg(n - 1) - weekAvg(n - 2) : null; r.msgs.push(pd != null && pd > -0.1 ? {t: 'warn', s: 'Вес не падает две недели подряд. Сам еду не урезай: пришли данные, пересчитаю расход.'} : {t: 'warn', s: 'Вес почти не меняется (' + (r.delta > 0 ? '+' : '') + fmt(r.delta, 2) + ' кг). Ещё неделя наблюдения.'}); }
+  else r.msgs.push({t: 'warn', s: 'Вес растёт больше 0,5 кг. Проверь условия взвешивания, потом пришли данные.'});
+  return r;
+}
+
+/* ---------------- интерфейс: оболочка ---------------- */
+const TABS = [['today', 'Сегодня', '☀'], ['gym', 'Зал', '🏋'], ['week', 'Неделя', '📈'], ['tests', 'Тесты', '⏱'], ['data', 'Данные', '⚙']];
+let tab = 'today';
+let curDate = today();
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map(t => `<button data-tab="${t[0]}" class="${tab === t[0] ? 'on' : ''}"><span class="ic">${t[2]}</span>${t[1]}</button>`).join('');
+}
+function renderTop() {
+  const n = weekNo(curDate);
+  const wk = DATA.weeks.find(w => w.n === n);
+  const wtxt = n < 1 ? 'до старта' : 'неделя ' + n + (wk ? ' · ' + DATA.blockNames[wk.blk].split(' · ')[0] : '');
+  $('#top').innerHTML = `<div class="ttl"><div><h1>${tab === 'today' ? esc(WDN[parse(curDate).getDay()]) + ', ' + esc(dlong(curDate)) : (TABS.find(t => t[0] === tab) || [])[1]}</h1>
+  <div class="sub">${esc(wtxt)} · ${S.settings.mode === 'maint' ? 'поддержание' : 'дефицит'}${memOnly ? ' · <b style="color:var(--bad)">данные не сохраняются</b>' : ''}</div></div></div>`;
+}
+function render() { renderTabs(); renderTop(); const v = $('#view'); ({today: viewToday, gym: viewGym, week: viewWeek, tests: viewTests, data: viewData})[tab](v); }
+function go(t) { tab = t; render(); window.scrollTo(0, 0); }
+
+/* ---------------- вкладка «Сегодня» ---------------- */
+const SYMS = [['heart', 'Изжога, отрыжка', 0], ['belly', 'Боль или жжение в животе', 0], ['itch', 'Зуд или сыпь', 1], ['dizzy', 'Головокружение', 1],
+  ['swell', 'Отёк губ, лица, горла', 2], ['faint', 'Потемнение в глазах или обморок', 2]];
+const FLAGS = [['easy', 'Легче', 'good'], ['norm', 'Как обычно', ''], ['hard', 'Тяжелее', 'bad'], ['none', 'Серии не было', '']];
+
+function viewToday(v) {
+  const date = curDate, d = S.days[date] || {}, m = menuFor(date), items = menuItems(date), t = d.meals || {};
+  const planned = plannedKcal(date), ticked = tickedKcal(date);
+  const sym = d.sym || {};
+  const dangerSym = SYMS.filter(x => x[2] === 2 && sym[x[0]]);
+  const w = num(d.w), ma = movAvg(date);
+  const sun = dayCode(date) === 'Вс';
+  const waistVal = S.waist[date];
+  const mealsHtml = items.map(x => `<div class="meal ${t[x.id] ? 'on' : ''}" data-act="meal" data-id="${x.id}">
+    <div class="ck">✓</div><div class="mb"><div class="mt">${x.code ? esc(x.code) + ' · ' : ''}${esc(x.time ? x.time + ' · ' : '')}${esc(x.title)}</div>
+    <div class="mi">${x.items.map(esc).join('; ')}</div>${x.note ? `<div class="mi">${esc(x.note)}</div>` : ''}</div><div class="kc">${x.kcal}<br>ккал</div></div>`).join('');
+  v.innerHTML = `
+  <div class="days"><button class="btn sec" data-act="day" data-n="-1" aria-label="Предыдущий день">‹</button>
+    <input type="date" id="dt" value="${date}"><button class="btn sec" data-act="day" data-n="1" aria-label="Следующий день">›</button></div>
+  <div class="row" style="margin:6px 0 10px"><button class="chip ${date === today() ? 'on' : ''}" data-act="todaybtn">Сегодня</button>
+    <button class="chip ${d.rest ? 'on' : ''}" data-act="rest" title="Меню отдыха">Нет тренировок: меню отдыха</button></div>
+  <div class="card"><h2>Утро</h2>
+    <div class="row"><div><label class="f" for="w">Вес, кг (до еды)</label><input type="text" inputmode="decimal" id="w" value="${d.w != null ? esc(String(d.w).replace('.', ',')) : ''}" placeholder="85,0" autocomplete="off"></div>
+    <div><label class="f" for="sleep">Сон, часов</label><input type="text" inputmode="decimal" id="sleep" value="${d.sleep != null ? esc(String(d.sleep).replace('.', ',')) : ''}" placeholder="8" autocomplete="off"></div></div>
+    <div class="sm mut" style="margin-top:6px">Среднее за 7 дней: <b id="ma">${ma != null ? fmt(ma) + ' кг' : 'пока мало данных'}</b></div>
+    <h3>Усталость</h3><div class="chips">${[1, 2, 3, 4, 5].map(i => `<button class="chip ${d.fat === i ? 'on' : ''}" data-act="fat" data-v="${i}">${i}</button>`).join('')}<span class="xs mut" style="align-self:center">1 бодр · 5 разбит</span></div>
+    ${(sun || waistVal != null) ? `<h3>Талия по пупку, см</h3><input type="text" inputmode="decimal" id="waist" value="${waistVal != null ? esc(String(waistVal).replace('.', ',')) : ''}" placeholder="87" autocomplete="off"><div class="xs mut">Раз в неделю, воскресенье утром, лента по коже на выдохе</div>` : `<div class="xs mut" style="margin-top:8px">Талия — по воскресеньям.</div>`}
+  </div>
+  <div class="card"><h2><span>Меню на день · ${esc(m.load)}</span><span class="pill ${ticked >= planned * 0.9 ? 'ok' : ''}" id="kc">${ticked} / ${planned} ккал</span></h2>
+    ${mealsHtml}
+    <label class="f" for="off" style="margin-top:8px">Что ел не по меню (по желанию)</label><input type="text" id="off" value="${esc(d.off || '')}" placeholder="например: пицца вечером" autocomplete="off">
+  </div>
+  <div class="card"><h2>Вода: основная серия на своём режиме</h2>
+    <div class="chips">${FLAGS.map(f => `<button class="chip ${f[2]} ${d.flag === f[0] ? 'on' : ''}" data-act="flag" data-v="${f[0]}">${f[1]}</button>`).join('')}</div>
+    <div class="xs mut" style="margin-top:6px">Отметка после тренировки. «Тяжелее» два раза в неделю две недели подряд — пауза дефицита.</div></div>
+  <div class="card"><h2>Самочувствие</h2>
+    <div class="chips">${SYMS.map(x => `<button class="chip ${x[2] === 2 ? 'bad' : x[2] === 1 ? 'warn' : ''} ${sym[x[0]] ? 'on' : ''}" data-act="sym" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+    ${sym.swell ? `<div class="alert bad"><b>Отёк губ, лица, горла.</b> Левоцетиризин 5 мг (как в выписке) и сразу 103 или 112. Если отёк дошёл до горла или трудно дышать, не жди.</div>` : ''}
+    ${sym.faint ? `<div class="alert bad"><b>Потемнение в глазах или обморок.</b> Остановить тренировку, лечь, сообщить тренеру и врачу.</div>` : ''}
+    ${(sym.dizzy || sym.itch) && !dangerSym.length ? `<div class="alert warn">Если повторяется три дня, сделай паузу в дефиците и напиши мне.</div>` : ''}
+    <div class="xs mut" style="margin-top:6px">Чёрный стул, рвота с кровью, сильная боль в животе — срочно к врачу.</div></div>
+  <div class="card"><h2>Заметка</h2><textarea id="note" placeholder="Новое в еде или добавках, самочувствие, что болело">${esc(d.note || '')}</textarea></div>`;
+}
+
+/* ---------------- вкладка «Зал» ---------------- */
+function viewGym(v) {
+  const date = curDate, n = weekNo(date), wk = DATA.weeks.find(x => x.n === n);
+  const sess = (S.ui.gymSession && S.ui.gymDate === date) ? S.ui.gymSession : defaultSession(date);
+  const bi = blockIdx(n);
+  const list = DATA.sessions[sess];
+  const todays = S.gym.filter(g => g.date === date);
+  const exCards = list.map(ex => {
+    const info = exInfo(ex.code), sets = todays.filter(g => g.ex === ex.code);
+    const prev = S.gym.filter(g => g.ex === ex.code && g.date < date).sort((a, b) => a.date < b.date ? 1 : -1);
+    const lastDate = prev.length ? prev[0].date : null;
+    const lastSets = lastDate ? prev.filter(g => g.date === lastDate) : [];
+    const last = lastSets.length ? lastSets.map(g => fmt(g.w) + '×' + g.reps + (g.rpe != null ? '@' + g.rpe : '')).join(', ') : null;
+    const scheme = sess === 'C' ? ex.sets : ex.b[Math.min(bi, 2)];
+    const defW = sets.length ? sets[sets.length - 1].w : (lastSets.length ? lastSets[lastSets.length - 1].w : '');
+    const defR = sets.length ? sets[sets.length - 1].reps : (lastSets.length ? lastSets[lastSets.length - 1].reps : '');
+    if (NOLOAD.indexOf(ex.code) >= 0) {
+      const done = ((S.days[date] || {}).done || {})[ex.code];
+      return `<div class="ex" data-ex="${ex.code}"><div class="eh"><div><span class="code">${ex.code}</span><b>${esc(ex.name)}</b></div><span class="pill">${esc(scheme)}</span></div>
+      <div class="xs mut">Отдых ${esc(ex.rest)}</div>
+      <details><summary>Как делать</summary><div class="sm">${esc(ex.hint)}</div></details>
+      <div class="chips" style="margin-top:6px"><button class="chip good ${done ? 'on' : ''}" data-act="done" data-ex="${ex.code}">${done ? '✓ Сделал' : 'Сделал'}</button></div></div>`;
+    }
+    return `<div class="ex" data-ex="${ex.code}"><div class="eh"><div><span class="code">${ex.code}</span><b>${esc(ex.name)}</b></div><span class="pill">${esc(scheme)}</span></div>
+      <div class="xs mut">Отдых ${esc(ex.rest)}${last ? ' · в прошлый раз: ' + esc(last) + ' (' + esc(dshort(lastDate)) + ')' : ''}</div>
+      <details><summary>Как делать</summary><div class="sm">${esc(ex.hint)}</div></details>
+      ${sets.map((g, i) => { const val = e1rm(g, info); return `<div class="setrow"><span class="mut">${i + 1}.</span><b>${fmt(g.w)} кг × ${g.reps}</b>${g.rpe != null ? `<span class="mut">@${fmt(g.rpe)}</span>` : ''}<span class="xs mut">макс. ≈ ${fmt(info.bw ? val.added : val.total)} кг</span><button class="btn sec sm x" data-act="delset" data-id="${g.id}" aria-label="Удалить подход">✕</button></div>`; }).join('')}
+      <div class="row" style="margin-top:4px"><div><label class="f">${info.bw ? 'Вес пояса, кг' : 'Вес, кг'}</label><input type="text" inputmode="decimal" class="gw" value="${defW === '' ? '' : esc(String(defW).replace('.', ','))}" autocomplete="off"></div>
+        <div><label class="f">Повторы</label><input type="text" inputmode="numeric" class="gr" value="${defR}" autocomplete="off"></div>
+        <div><label class="f">RPE</label><select class="gp"><option value="">—</option>${[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map(x => `<option value="${x}">${String(x).replace('.', ',')}</option>`).join('')}</select></div>
+        <div style="flex:0 0 auto"><label class="f">&nbsp;</label><button class="btn" data-act="addset" data-ex="${ex.code}">+ подход</button></div></div></div>`;
+  }).join('');
+  const lifts = DATA.lifts.map(l => { const a = liftBest(l[0], n), b = n > 1 ? liftBest(l[0], n - 1) : null; const d = (a != null && b != null) ? (a / b - 1) * 100 : null;
+    return `<tr><td>${esc(l[1])}</td><td class="n">${a != null ? fmt(a) : '—'}</td><td class="n">${b != null ? fmt(b) : '—'}</td><td class="n">${d != null ? (d > 0 ? '+' : '') + fmt(d) + '%' : '—'}</td></tr>`; }).join('');
+  v.innerHTML = `
+  <div class="days"><button class="btn sec" data-act="day" data-n="-1">‹</button><input type="date" id="dt" value="${date}"><button class="btn sec" data-act="day" data-n="1">›</button></div>
+  <div class="chips" style="margin:8px 0">${['A', 'B', 'C'].map(k => `<button class="chip ${sess === k ? 'on' : ''}" data-act="sess" data-v="${k}">Занятие ${k}</button>`).join('')}</div>
+  ${wk ? `<div class="card"><h2>Неделя ${n} · ${esc(wk.kind)}</h2><div class="kv"><span>Жим / присед</span><span>${esc(wk.main)}</span><span>Подтягивания</span><span>${esc(wk.pull)}</span><span>Допы</span><span>${esc(wk.acc)}</span><span>Прыжки · медбол</span><span>${esc(wk.jump)} · ${esc(wk.ball)}</span><span>Занятие C</span><span>${esc(wk.c)}</span></div>
+    ${wk.note ? `<div class="sm mut" style="margin-top:6px">${esc(wk.note)}</div>` : ''}</div>` : ''}
+  <div class="card"><h2>Занятие ${sess}</h2>${exCards}</div>
+  <div class="card"><h2>Расчётный максимум по неделям</h2><table><tr><th>Подъём</th><th class="n">Эта</th><th class="n">Прошлая</th><th class="n">Δ</th></tr>${lifts}</table>
+  <div class="xs mut" style="margin-top:6px">Макс. = вес × (1 + (повторы + 10 − RPE) / 30). Для подтягиваний — добавочный вес к весу тела (${fmt(curBW())} кг).</div></div>`;
+}
+
+/* ---------------- вкладка «Неделя» ---------------- */
+function chartSvg(dates) {
+  const pts = dates.map(d => ({d, w: num((S.days[d] || {}).w), m: movAvg(d)}));
+  const ws = pts.map(p => p.w).filter(x => x != null).concat(pts.map(p => p.m).filter(x => x != null));
+  if (ws.length < 2) return '<div class="sm mut">График появится, когда будет несколько взвешиваний.</div>';
+  const lo = Math.min.apply(null, ws) - 0.3, hi = Math.max.apply(null, ws) + 0.3, W = 320, H = 130, L = 30, R = 6, T = 8, B = 18;
+  const x = i => L + (W - L - R) * i / (pts.length - 1), y = w => T + (H - T - B) * (1 - (w - lo) / (hi - lo));
+  let dots = '', line = '', first = true;
+  pts.forEach((p, i) => { if (p.w != null) dots += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.w).toFixed(1)}" r="2.6" fill="var(--mut)"/>`; if (p.m != null) { line += (first ? 'M' : 'L') + x(i).toFixed(1) + ' ' + y(p.m).toFixed(1) + ' '; first = false; } });
+  const ticks = [lo + 0.3, (lo + hi) / 2, hi - 0.3].map(t => `<text x="2" y="${(y(t) + 4).toFixed(1)}" font-size="9" fill="var(--mut)">${t.toFixed(1).replace('.', ',')}</text><line x1="${L}" x2="${W - R}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="var(--line)"/>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Вес за 4 недели">${ticks}<path d="${line}" fill="none" stroke="var(--acc)" stroke-width="2.2"/>${dots}
+  <text x="${L}" y="${H - 4}" font-size="9" fill="var(--mut)">${dshort(dates[0])}</text><text x="${W - R}" y="${H - 4}" font-size="9" text-anchor="end" fill="var(--mut)">${dshort(dates[dates.length - 1])}</text></svg>
+  <div class="xs mut">Точки — взвешивания, линия — среднее за 7 дней.</div>`;
+}
+function summaryText(from, to) {
+  const lines = []; const mode = S.settings.mode === 'maint' ? 'поддержание' : 'дефицит';
+  lines.push(`ЖУРНАЛ ${from}..${to} (режим питания: ${mode}; версия страницы ${DATA.version})`);
+  lines.push('дата | день | вес | среднее7 | сон | усталость | режим воды | меню (ккал отмечено/план) | симптомы | не по меню | заметка');
+  for (let d = from; d <= to; d = addDays(d, 1)) {
+    const x = S.days[d]; if (!x && !(d in S.waist)) continue; const e = x || {};
+    const sy = SYMS.filter(s => (e.sym || {})[s[0]]).map(s => s[1]).join(', ');
+    lines.push([d, dayCode(d) + (e.rest ? '(отдых)' : ''), e.w != null ? e.w : '', fmt(movAvg(d)), e.sleep != null ? e.sleep : '', e.fat || '', (FLAGS.find(f => f[0] === e.flag) || [0, ''])[1], tickedKcal(d) + '/' + plannedKcal(d), sy, e.off || '', (e.note || '').replace(/\s+/g, ' ')].join(' | '));
+  }
+  const wl = Object.keys(S.waist).filter(k => k >= from && k <= to).sort().map(k => k + '=' + S.waist[k]); if (wl.length) lines.push('Талия: ' + wl.join('; '));
+  const n = weekNo(to), r = evalWeek(n);
+  lines.push(`Неделя ${n}: среднее ${fmt(r.avg, 2)} кг, прошлая ${fmt(r.prev, 2)}, изменение ${fmt(r.delta, 2)}; «тяжелее» ${r.flags} (прошлая ${r.flagsPrev}); ${r.msgs.map(m => m.s).join(' ')}`);
+  if (r.signals.length) lines.push('Стоп-сигналы: ' + r.signals.join(' '));
+  const g = DATA.lifts.map(l => `${l[1]}: ${fmt(liftBest(l[0], n))}/${fmt(n > 1 ? liftBest(l[0], n - 1) : null)}`).join('; '); lines.push('Зал, лучший расчётный максимум (эта/прошлая неделя): ' + g);
+  const sets = S.gym.filter(x => x.date >= from && x.date <= to); if (sets.length) lines.push('Подходы: ' + sets.sort((a, b) => a.date < b.date ? -1 : 1).map(x => `${x.date} ${x.ex} ${x.w}x${x.reps}${x.rpe != null ? '@' + x.rpe : ''}`).join('; '));
+  const st = S.starts.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(s => `${s.date} ${s.dist} м ${s.pool} м ${secStr(s.time)}${s.note ? ' (' + s.note + ')' : ''}`); if (st.length) lines.push('Старты: ' + st.join('; '));
+  const ts = S.tests.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(t => `${t.date} ${t.name}: ${t.val}`); if (ts.length) lines.push('Тесты: ' + ts.join('; '));
+  return lines.join('\n');
+}
+function viewWeek(v) {
+  const n = Math.max(1, weekNo(curDate)); const r = evalWeek(n);
+  const dates = []; for (let i = 27; i >= 0; i--) dates.push(addDays(curDate, -i));
+  const rows = []; for (let k = n; k >= Math.max(1, n - 5); k--) { const a = weekAvg(k), b = k > 1 ? weekAvg(k - 1) : null; const wd = weekDates(k); const kc = wd.reduce((s, x) => s + (hasData(S.days[x]) ? 1 : 0), 0);
+    const ticks = wd.map(x => { const p = plannedKcal(x), t = tickedKcal(x); return (S.days[x] && S.days[x].meals) ? t / p : null; }).filter(x => x != null);
+    rows.push(`<tr><td>${k} <span class="xs mut">${dshort(weekStart(k))}</span></td><td class="n">${a != null ? fmt(a, 2) : '—'}</td><td class="n">${a != null && b != null ? (a - b > 0 ? '+' : '') + fmt(a - b, 2) : '—'}</td><td class="n">${wd.reduce((s, x) => s + (((S.days[x] || {}).flag === 'hard') ? 1 : 0), 0)}</td><td class="n">${ticks.length ? Math.round(mean(ticks) * 100) + '%' : '—'}</td></tr>`); }
+  const waist = Object.keys(S.waist).sort().slice(-6).map(k => `<tr><td>${esc(dshort(k))}</td><td class="n">${fmt(S.waist[k])} см</td></tr>`).join('');
+  const sleepAvg = mean(weekDates(n).map(x => num((S.days[x] || {}).sleep)).filter(x => x != null)), fatAvg = mean(weekDates(n).map(x => (S.days[x] || {}).fat).filter(x => x != null));
+  const symCnt = weekDates(n).reduce((s, x) => s + Object.keys((S.days[x] || {}).sym || {}).filter(k => S.days[x].sym[k]).length, 0);
+  v.innerHTML = `
+  <div class="days"><button class="btn sec" data-act="day" data-n="-7">‹</button><input type="date" id="dt" value="${curDate}"><button class="btn sec" data-act="day" data-n="7">›</button></div>
+  <div class="card" style="margin-top:8px"><h2>Неделя ${n} · ${esc(dshort(weekStart(n)))}–${esc(dshort(addDays(weekStart(n), 6)))}</h2>
+    ${r.msgs.map(m => `<div class="alert ${m.t === 'mut' ? '' : m.t}" ${m.t === 'mut' ? 'style="background:var(--chip)"' : ''}>${esc(m.s)}</div>`).join('')}
+    ${r.signals.length ? `<div class="alert bad"><b>Стоп-сигналы.</b> ${r.signals.map(esc).join(' ')} Ешь меню на поддержание (то же меню + блок А в М6) не меньше 2 недель и напиши мне.</div>` : `<div class="alert ok">Стоп-сигналов нет.</div>`}
+    <div class="kv"><span>Среднее за неделю</span><span>${fmt(r.avg, 2)} кг</span><span>Прошлая неделя</span><span>${fmt(r.prev, 2)} кг</span><span>Изменение</span><span>${r.delta != null ? (r.delta > 0 ? '+' : '') + fmt(r.delta, 2) + ' кг' : '—'}</span>
+    <span>«Тяжелее» за неделю</span><span>${r.flags} (прошлая ${r.flagsPrev})</span><span>Сон, среднее</span><span>${sleepAvg != null ? fmt(sleepAvg) + ' ч' : '—'}</span><span>Усталость, среднее</span><span>${fatAvg != null ? fmt(fatAvg) : '—'}</span><span>Отметок самочувствия</span><span>${symCnt}</span></div></div>
+  <div class="card"><h2>Вес за 4 недели</h2>${chartSvg(dates)}</div>
+  <div class="card"><h2>Последние недели</h2><table><tr><th>Нед.</th><th class="n">Среднее, кг</th><th class="n">Δ</th><th class="n">Тяжелее</th><th class="n">Меню</th></tr>${rows.join('')}</table></div>
+  <div class="card"><h2>Талия по пупку</h2>${waist ? `<table>${waist}</table>` : '<div class="sm mut">Ещё нет записей.</div>'}</div>
+  <div class="card"><h2>Отправить мне</h2><div class="sm mut">Скопируй сводку за 14 дней и вставь в чат с Claude.</div>
+    <div class="row" style="margin-top:8px"><button class="btn" data-act="copy14">Скопировать сводку</button><button class="btn sec" data-act="copyjson">Все данные (JSON)</button></div></div>`;
+}
+
+/* ---------------- вкладка «Тесты» ---------------- */
+function normPct(dist, pool, t) { const n = (DATA.norms[dist] || {})[pool]; return n ? (t / n - 1) * 100 : null; }
+function checkpoint() {
+  const w = DATA.window; const res = S.starts.filter(s => s.date >= w[0] && s.date <= w[1]);
+  const ok = [];
+  res.forEach(s => { const key = s.dist + '_' + s.pool, th = DATA.thresholds[key]; if (th != null && s.time <= th) ok.push(s); });
+  return {res, ok};
+}
+function bestLine(res) {
+  const parts = [];
+  [800, 400].forEach(dist => [50, 25].forEach(pool => {
+    const t = res.filter(s => s.dist === dist && s.pool === pool).map(s => s.time);
+    if (t.length) parts.push(dist + ' м (' + pool + ' м): ' + secStr(Math.min.apply(null, t)));
+  }));
+  return parts.length ? ' Лучшее в окне: ' + parts.join('; ') + '.' : '';
+}
+function critSpeed() {
+  const out = [];
+  [25, 50].forEach(p => { const a = S.starts.filter(s => s.pool === p && s.dist === 200), b = S.starts.filter(s => s.pool === p && s.dist === 400);
+    a.forEach(x => b.forEach(y => { if (Math.abs(diffDays(x.date, y.date)) <= 21 && y.time > x.time) { const cs = 200 / (y.time - x.time); out.push({pool: p, cs, pace: 100 / cs, dprime: 200 - cs * x.time, date: y.date}); } })); });
+  return out;
+}
+function viewTests(v) {
+  const cp = checkpoint(), st = S.starts.slice().sort((a, b) => a.date < b.date ? 1 : -1);
+  const pbs = DATA.pb.map(p => `<tr><td>${p.dist} м · ${p.pool} м</td><td class="n">${secStr(p.t)}</td><td class="n xs mut">${esc(p.note || '')}</td></tr>`).join('');
+  const startRows = st.map(s => { const pc = normPct(s.dist, s.pool, s.time); return `<tr><td>${esc(dshort(s.date))}</td><td>${s.dist} м · ${s.pool} м</td><td class="n"><b>${secStr(s.time)}</b></td><td class="n">${pc != null ? (pc > 0 ? '+' : '') + fmt(pc) + '%' : '—'}</td><td class="n"><button class="btn sec sm" data-act="delstart" data-id="${s.id}">✕</button></td></tr>`; }).join('');
+  const cs = critSpeed();
+  const names = DATA.tests.map(t => t[0]).filter(x => !/^800 и 400/.test(x) && x !== 'Вес тела' && x !== 'Талия по пупку');
+  const tr = S.tests.slice().sort((a, b) => a.date < b.date ? 1 : -1).map(t => `<tr><td>${esc(dshort(t.date))}</td><td>${esc(t.name)}</td><td class="n"><b>${esc(t.val)}</b></td><td class="n"><button class="btn sec sm" data-act="deltest" data-id="${t.id}">✕</button></td></tr>`).join('');
+  const meets = DATA.meets.map(m => `<tr><td class="xs"><b>${esc(m[0])}</b></td><td class="xs">${esc(m[1])}<br><span class="mut">${esc(m[2])}</span></td></tr>`).join('');
+  v.innerHTML = `
+  <div class="card"><h2>Контрольная точка</h2>
+    <div class="sm mut">Окно ${esc(dshort(DATA.window[0]))}–${esc(dshort(DATA.window[1]))}: 800 м ≤ ${secStr(DATA.thresholds['800_50'])} (50 м) или ≤ ${secStr(DATA.thresholds['800_25'])} (25 м), либо 400 м ≤ ${secStr(DATA.thresholds['400_50'])} (50 м).</div>
+    ${cp.ok.length ? `<div class="alert ok"><b>Выполнена:</b> ${cp.ok.map(s => s.dist + ' м ' + secStr(s.time) + ' (' + dshort(s.date) + ')').join('; ')}. Весна 2027 остаётся.</div>`
+      : cp.res.length ? `<div class="alert warn">Результаты в окне есть, порога нет.${bestLine(cp.res)}</div>`
+      : `<div class="alert" style="background:var(--chip)">Официальных 400 и 800 м в окне пока нет.</div>`}</div>
+  <div class="card"><h2>Добавить результат старта</h2>
+    <div class="row"><div><label class="f">Дата</label><input type="date" id="sd" value="${today()}"></div>
+    <div><label class="f">Бассейн</label><select id="sp"><option value="50">50 м</option><option value="25">25 м</option></select></div>
+    <div><label class="f">Дистанция</label><select id="sdist">${[800, 400, 200, 100, 50, 1500].map(d => `<option value="${d}">${d} м</option>`).join('')}</select></div></div>
+    <div class="row" style="margin-top:6px"><div><label class="f">Время (м:сс,сс)</label><input type="text" id="stime" inputmode="decimal" placeholder="8:45,09" autocomplete="off"></div>
+    <div><label class="f">Старт, заметка</label><input type="text" id="snote" placeholder="школа, 25 м" autocomplete="off"></div>
+    <div style="flex:0 0 auto"><label class="f">&nbsp;</label><button class="btn" data-act="addstart">Добавить</button></div></div></div>
+  <div class="card"><h2>Старты</h2>${startRows ? `<table><tr><th>Дата</th><th>Дист.</th><th class="n">Время</th><th class="n">К норме МС</th><th></th></tr>${startRows}</table>` : '<div class="sm mut">Результатов пока нет.</div>'}
+    ${cs.length ? `<h3>Критическая скорость</h3>${cs.map(c => `<div class="sm">${c.pool} м: CS ${fmt(c.cs, 2)} м/с (${secStr(c.pace)} на 100 м), D′ ${fmt(c.dprime, 0)} м</div>`).join('')}` : '<div class="xs mut" style="margin-top:6px">Критическая скорость считается, когда есть 200 и 400 м одного бассейна в пределах 3 недель.</div>'}</div>
+  <div class="card"><h2>Рекорды (с твоих слов)</h2><table>${pbs}</table></div>
+  <div class="card"><h2>Тесты зала и прыжки</h2>
+    <label class="f">Тест</label><select id="tn">${names.map(n => `<option>${esc(n)}</option>`).join('')}</select>
+    <div class="row" style="margin-top:6px"><div><label class="f">Результат</label><input type="text" id="tv" placeholder="например 65 кг или 15" autocomplete="off"></div>
+    <div style="flex:0 0 auto"><label class="f">&nbsp;</label><button class="btn" data-act="addtest">Добавить</button></div></div>
+    ${tr ? `<table style="margin-top:8px"><tr><th>Дата</th><th>Тест</th><th class="n">Результат</th><th></th></tr>${tr}</table>` : ''}</div>
+  <div class="card"><h2>Возможные контрольные старты</h2><table>${meets}</table>
+    <div class="xs mut" style="margin-top:6px">Платные старты ты не планируешь. Старты школы — заявка твоя, когда опубликуют программу.</div></div>`;
+}
+
+/* ---------------- вкладка «Данные» ---------------- */
+function viewData(v) {
+  const days = Object.keys(S.days).filter(k => hasData(S.days[k])).length;
+  v.innerHTML = `
+  <div class="card"><h2>Режим питания</h2>
+    <div class="chips"><button class="chip ${S.settings.mode === 'deficit' ? 'on' : ''}" data-act="mode" data-v="deficit">Дефицит</button><button class="chip ${S.settings.mode === 'maint' ? 'on' : ''}" data-act="mode" data-v="maint">Поддержание (+ блок А в М6)</button></div>
+    <div class="xs mut" style="margin-top:6px">Поддержание включай при стоп-сигнале или когда вес падает слишком быстро.</div></div>
+  <div class="card"><h2>Вес тела для подтягиваний</h2><div class="row"><input type="text" inputmode="decimal" id="bw" value="${esc(String(S.settings.bw).replace('.', ','))}"><div class="xs mut">Если есть среднее за 7 дней, берётся оно (${fmt(curBW())} кг).</div></div></div>
+  <div class="card"><h2>Отправить данные</h2>
+    <div class="row"><button class="btn" data-act="copy14">Сводка за 14 дней</button><button class="btn sec" data-act="copyjson">Все данные (JSON)</button></div>
+    <div class="sm mut" style="margin-top:8px">Раз в неделю копируй сводку и вставляй в чат с Claude. JSON нужен как резервная копия: сохрани его в «Избранное» в Telegram.</div></div>
+  <div class="card"><h2>Восстановить из копии</h2><textarea id="imp" placeholder="Вставь сюда JSON"></textarea><div class="row" style="margin-top:8px"><button class="btn sec" data-act="import">Загрузить</button></div></div>
+  <div class="card"><h2>Установка на iPhone</h2><div class="sm">Открой страницу в Safari → кнопка «Поделиться» → «На экран „Домой“». Дальше открывай с иконки: так данные не стираются при долгом простое.</div></div>
+  <div class="card"><h2>О странице</h2><div class="kv"><span>Версия</span><span>${esc(DATA.version)}</span><span>Дней с записями</span><span>${days}</span><span>Подходов в зале</span><span>${S.gym.length}</span><span>Хранение</span><span>${memOnly ? 'нет доступа' : 'в этом телефоне'}</span></div>
+    <div class="xs mut" style="margin-top:6px">Данные хранятся только в браузере этого телефона. Сайт данных не собирает. Это не медицинская консультация.</div></div>
+  <div class="card"><h2>Сброс</h2><div class="row"><button class="btn danger" data-act="wipe">Стереть все данные</button></div></div>`;
+}
+
+/* ---------------- действия ---------------- */
+function copyText(txt, ok) {
+  const done = () => toast(ok || 'Скопировано');
+  const fallback = () => { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Не удалось скопировать'); } document.body.removeChild(ta); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
+}
+document.addEventListener('click', ev => {
+  const tb = ev.target.closest('[data-tab]'); if (tb) { go(tb.dataset.tab); return; }
+  const el = ev.target.closest('[data-act]'); if (!el) return;
+  const act = el.dataset.act, d = D(curDate);
+  switch (act) {
+    case 'day': curDate = addDays(curDate, parseInt(el.dataset.n, 10)); render(); break;
+    case 'todaybtn': curDate = today(); render(); break;
+    case 'rest': d.rest = !d.rest; if (!d.rest) delete d.rest; if (!hasData(d) && !d.rest) delete S.days[curDate]; save(); render(); break;
+    case 'meal': d.meals = d.meals || {}; if (d.meals[el.dataset.id]) delete d.meals[el.dataset.id]; else d.meals[el.dataset.id] = true; save(); render(); break;
+    case 'fat': d.fat = d.fat === parseInt(el.dataset.v, 10) ? null : parseInt(el.dataset.v, 10); if (d.fat == null) delete d.fat; save(); render(); break;
+    case 'flag': d.flag = d.flag === el.dataset.v ? null : el.dataset.v; if (d.flag == null) delete d.flag; save(); render(); break;
+    case 'sym': d.sym = d.sym || {}; if (d.sym[el.dataset.v]) delete d.sym[el.dataset.v]; else d.sym[el.dataset.v] = true; save(); render(); break;
+    case 'sess': S.ui.gymSession = el.dataset.v; S.ui.gymDate = curDate; save(); render(); break;
+    case 'addset': {
+      const card = el.closest('.ex'), w = num($('.gw', card).value), reps = parseInt($('.gr', card).value, 10), rpe = num($('.gp', card).value);
+      if (w == null || !(reps > 0)) { toast('Укажи вес и повторы'); break; }
+      S.gym.push({id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: curDate, ex: el.dataset.ex, w, reps, rpe});
+      save(); render(); toast('Подход записан'); break;
+    }
+    case 'delset': S.gym = S.gym.filter(g => g.id !== el.dataset.id); save(); render(); break;
+    case 'done': d.done = d.done || {}; if (d.done[el.dataset.ex]) delete d.done[el.dataset.ex]; else d.done[el.dataset.ex] = true; save(); render(); break;
+    case 'addstart': {
+      const t = parseTime($('#stime').value), date = $('#sd').value;
+      if (t == null || !date) { toast('Укажи дату и время'); break; }
+      S.starts.push({id: Date.now().toString(36), date, pool: parseInt($('#sp').value, 10), dist: parseInt($('#sdist').value, 10), time: t, note: $('#snote').value.trim()});
+      save(); render(); toast('Результат добавлен'); break;
+    }
+    case 'delstart': S.starts = S.starts.filter(s => s.id !== el.dataset.id); save(); render(); break;
+    case 'addtest': { const val = $('#tv').value.trim(); if (!val) { toast('Укажи результат'); break; } S.tests.push({id: Date.now().toString(36), date: today(), name: $('#tn').value, val}); save(); render(); toast('Тест записан'); break; }
+    case 'deltest': S.tests = S.tests.filter(t => t.id !== el.dataset.id); save(); render(); break;
+    case 'mode': S.settings.mode = el.dataset.v; save(); render(); break;
+    case 'copy14': { const to = today(); copyText(summaryText(addDays(to, -13), to), 'Сводка скопирована'); break; }
+    case 'copyjson': copyText(JSON.stringify(S), 'Данные скопированы'); break;
+    case 'import': {
+      const raw = $('#imp').value.trim(); if (!raw) { toast('Вставь JSON'); break; }
+      try { const o = JSON.parse(raw); if (!o || typeof o !== 'object' || !o.days) throw 0; S = Object.assign(fresh(), o); save(); render(); toast('Данные загружены'); } catch (e) { toast('Это не похоже на копию данных'); }
+      break;
+    }
+    case 'wipe': if (confirm('Стереть все данные на этом телефоне? Это нельзя отменить.')) { if (confirm('Точно стереть всё?')) { S = fresh(); save(); render(); toast('Данные стёрты'); } } break;
+  }
+});
+document.addEventListener('input', ev => {
+  const t = ev.target, d = D(curDate);
+  if (t.id === 'w') {
+    const x = num(t.value); if (x == null) delete d.w; else d.w = x; save();
+    const ma = movAvg(curDate), el = $('#ma'); if (el) el.textContent = ma != null ? fmt(ma) + ' кг' : 'пока мало данных';
+  }
+  else if (t.id === 'sleep') { const x = num(t.value); if (x == null) delete d.sleep; else d.sleep = x; save(); }
+  else if (t.id === 'waist') { const x = num(t.value); if (x == null) delete S.waist[curDate]; else S.waist[curDate] = x; save(); }
+  else if (t.id === 'off') { d.off = t.value; if (!t.value) delete d.off; save(); }
+  else if (t.id === 'note') { d.note = t.value; if (!t.value) delete d.note; save(); }
+  else if (t.id === 'bw') { const x = num(t.value); if (x != null) { S.settings.bw = x; save(); } }
+});
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.id === 'dt' && t.value) { curDate = t.value; render(); }
+});
+/* ---------------- запуск ---------------- */
+persistReq();
+render();
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+</script>
+</body>
+</html>
