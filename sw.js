@@ -1,5 +1,5 @@
 // Сервис-воркер журнала: страница работает без сети; при наличии сети берётся свежая версия.
-const VER = 'swimlog-v1';
+const VER = 'swimlog-v2';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VER).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
